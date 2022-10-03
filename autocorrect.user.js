@@ -16,7 +16,7 @@
 (async function() {
     'use strict';
     const TRESHOLD = 0.5
-    const TRESHOLD_RU = 0.7
+    const TRESHOLD_RU = 0.5
 
     const s1 = new Array(
       "й","ц","у","к","е","н","г","ш","щ","з","х","ъ",
@@ -112,10 +112,9 @@
     let english = /[a-z .,\[\]'/$]*/g
 
     setInterval(() => {
-        let messages = Array.from(document.querySelectorAll(".im-mess._im_mess .im-mess--text")).reverse()
+        let messages = Array.from(document.querySelectorAll(".im-mess._im_mess .im-mess--text")).filter(it => !it.hasAttribute("vkac")).reverse().slice(0, 10)
 
         messages.forEach(message => {
-            if (message.hasAttribute("vkac")) return
             let children = Array.from(message.childNodes)
             let text = ""
             let replace_mode = ""
@@ -136,7 +135,6 @@
             }
             let text_words = text.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/gm,"").replace(/\n*/gm, "").replace(/\s{2,}/g," ").replace("\d*", "").split(" ") || []
             text_words = text_words.filter(it => it != '')
-            console.log(text_words.join(" "))
             // en2ru
             let translitirate = []
             for (let word of text_words) {
@@ -145,13 +143,12 @@
                     if (!words.has(lowered)) {
                         translitirate.push(lowered)
                     }
-                    count_all++
                 }
             }
 
             let ratio = translitirate.length / (text_words.length || 1)
             if (ratio >= TRESHOLD) {
-                translitirate = translitirate.map(it => words_ru.has(it))
+                translitirate = translitirate.map(it => words_ru.has(translit(it, "en2ru")))
                 let ratio2 = translitirate.filter(Boolean).length / (translitirate.length || 1)
                 if (ratio2 >= TRESHOLD_RU) {
                     if (replace_mode == "oneline") {
