@@ -51,7 +51,7 @@
     }
     let request = GM_xmlhttpRequest
     let json_request = async (details) => {
-        return JSON.parse((await GM_xmlhttpRequest(details)).responseText)
+        return JSON.parse((await request(details)).responseText)
     }
 
     class Repository {
@@ -109,7 +109,7 @@
 
     let words_ru = new Set(JSON.parse(GM_getValue("content_ru", "[]")))
 
-    let english = /[a-z .,\[\]'/$]*/g
+    let english = /[a-z .,\[\]';]+$/g
 
     setInterval(() => {
         let messages = Array.from(document.querySelectorAll(".im-mess._im_mess .im-mess--text")).filter(it => !it.hasAttribute("vkac")).reverse().slice(0, 10)
@@ -133,7 +133,7 @@
                     }
                 }
             }
-            let text_words = text.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/gm,"").replace(/\n*/gm, "").replace(/\s{2,}/g," ").replace("\d*", "").split(" ") || []
+            let text_words = text.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/gm,"").replace(/\n*/gm, " ").replace(/\s{2,}/g," ").replace("\d*", "").split(" ") || []
             text_words = text_words.filter(it => it != '')
             // en2ru
             let translitirate = []
